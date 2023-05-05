@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sicnu.boot.mapper.QuestionMapper">
+    <insert id="collectQuestion">
+        insert into question_collection values (#{questionId},#{userId})
+    </insert>
+    <delete id="deleteCollectQuestion">
+        delete from question_collection where question_id = #{questionId} and user_id = #{userId}
+    </delete>
+
+    <select id="getQuestionList" resultType="com.sicnu.boot.pojo.Question" parameterType="com.sicnu.boot.vo.QuestionSelective">
+        select question_id,question_title,title_image,enclosure_image,question_type,
+               classify_id,difficult,source,year from question
+        <where>
+            <if test="typeName != null and typeName != 0">
+                question_type = #{typeName}
+            </if>
+            <if test="difficultMinValue != null and difficultMinValue != 0">
+                and ( difficult <![CDATA[ >= ]]> #{difficultMinValue}
+                and difficult <![CDATA[ <= ]]> #{difficultMaxValue})
+            </if>
+            <if test="classifyId != null and classifyId != 0">
+                and classify_id = #{classifyId}
+            </if>
+            <if test="sourceName != null and sourceName != ''">
+                and `source` = #{sourceName}
+            </if>
+            <if test="yearName != null">
+                and `year` = Year(#{yearName})
+            </if>
+        </where>
+    </select>
+    <select id="getQuestionChoiceByQuestionId" resultType="com.sicnu.boot.pojo.QuestionChoice">
+        select * from question_choice where question_id = #{questionId}
+    </select>
+    <select id="getQuestionClassifyList" resultType="com.sicnu.boot.vo.QuestionClassify">
+        select * from question_classify
+    </select>
+    <select id="getQuestionById" resultType="com.sicnu.boot.pojo.Question">
+        select * from question where question_id = #{questionId}
+    </select>
+    <select id="getGeneratingPaper" resultType="com.sicnu.boot.pojo.Question">
+        SELECT * FROM question where question_type = #{questionType} and classify_id = #{classifyId}
+        ORDER BY  RAND() LIMIT #{questionNum}
+    </select>
+    <select id="checkCollectQuestion" resultType="java.lang.Integer">
+        select count(*) from question_collection where question_id = #{questionId} and user_id = #{userId}
+    </select>
+    <select id="getCollectQuestionList" resultType="com.sicnu.boot.pojo.Question">
+        select * from question where question_id in (select question_id from question_collection where user_id = #{userId})
+    </select>
+    <select id="getQuestionByName" resultType="com.sicnu.boot.pojo.Question">
+        select question_id,question_title from question
+        <where>
+            <trim>question_title like "%" #{name} "%"</trim>
+        </where>
+    </select>
+    <select id="getQuestionCountsByClassify" resultType="java.lang.Integer">
+        select count(*) from question where classify_id = #{classifyId}
+    </select>
+</mapper>

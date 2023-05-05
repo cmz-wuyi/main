@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sicnu.boot.mapper.UserMapper">
+    <select id="getByUsername" resultType="User">
+        select * from user where username = #{username}
+    </select>
+
+    <select id="getUserById" resultType="User">
+        select * from user where user_id = #{userId}
+    </select>
+
+    <select id="getNicknameByUserId" resultType="String">
+        select nickname from user where user_id = #{userId}
+    </select>
+
+    <select id="getUsernameByPhone" resultType="String">
+        select username from user where phone = #{phone}
+    </select>
+
+    <select id="getCommentUserById" resultType="com.sicnu.boot.vo.CommentUserVo">
+        select user_id,nickname,image from user where user_id = #{userId}
+    </select>
+
+    <select id="checkUsername" resultType="int">
+        select count(*) from user where username = #{username}
+    </select>
+
+    <select id="checkPhone" resultType="int">
+        select count(*) from user where phone = #{phone}
+    </select>
+
+    <select id="getPassword" resultType="String">
+        select password from user where user_id = #{userId}
+    </select>
+    <select id="getUserMenu" resultType="Menu">
+        select distinct m.menu_id, path, m.name, component, parentId, menu_type, level,perms
+            from menu m left join role_menu rm on m.menu_id = rm.menu_id
+            left join user_role u on rm.role_id = u.role_id
+            where user_id = #{userId}
+    </select>
+    <select id="checkIsTeacher" resultType="java.lang.Integer">
+        select teacher_id from teacher where user_id = #{userId}
+    </select>
+
+    <insert id="register">
+        insert into user(username,password,phone) values(#{username},#{password},#{phone})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update user 
+        <set>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex},
+            </if>
+            <if test="age != null and age != ''">
+                age = #{age},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="message != null and message != ''">
+                message = #{message}
+            </if>
+        </set>
+        <where>
+            user_id = #{userId}
+        </where>
+    </update>
+
+    <update id="updatePasswordByUsername">
+        update user set password = #{password} where username = #{username}
+    </update>
+
+    <update id="updatePhoneByUserId">
+        update user set phone = #{phone} where user_id = #{userId}
+    </update>
+
+    <update id="updatePasswordByUserId">
+        update user set password = #{password} where user_id = #{userId}
+    </update>
+
+
+</mapper>

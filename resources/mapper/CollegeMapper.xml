@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sicnu.boot.mapper.CollegeMapper">
+<!--    查询院校-->
+    <select id="getCollegeById" resultType="College">
+        select *from college where college_id=#{collegeId}
+    </select>
+    <select id="getCollegeByName" resultType="College">
+        select college_id,name from college
+            <where>
+                <trim>name like "%"#{name}"%"</trim>
+            </where>
+    </select>
+    <select id="getAllCollege" resultType="College">
+        select *from college
+    </select>
+    <select id="getCollegeRegion" resultType="com.sicnu.boot.vo.CollegeRegion">
+        select *from college_region
+    </select>
+    <select id="getCollegeType" resultType="com.sicnu.boot.vo.CollegeType">
+        select *from college_type
+    </select>
+    <select id="getCollegeAttribute" resultType="com.sicnu.boot.vo.CollegeAttribute">
+        select *from college_attribute
+    </select>
+    <select id="getCollegeListBySelective" resultType="College">
+        select *from college
+        <where>
+            <if test="collegeName != null and collegeName != ''">
+                and name like "%"#{collegeName}"%"
+            </if>
+            <if test="regionId != null and regionId != 0">
+                and region_id = #{regionId}
+            </if>
+            <if test="typeId != null and typeId != 0">
+                and type_id = #{typeId}
+            </if>
+            <if test="attributeId != null and attributeId != 0">
+                and attribute_id = #{attributeId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

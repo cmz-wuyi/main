@@ -1,0 +1,140 @@
+server:
+  port: 8989
+  servlet:
+    #设置访问url前缀
+    context-path: /api
+
+jasypt:
+  #对数据库连接串加密的方法
+  encryptor:
+    # 你的秘钥
+    password: sicnu
+
+logging:
+  #配置日志配置文件地方
+  config: classpath:logback_spring.xml
+  level:
+    #开启sql打印
+    com.sicnu.boot.mapper: debug
+
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      #对数据库连接串加密
+      url: ENC(y7VIwY2A4BCPayCZE2kZqS1F4arB7igrmHeQ96CHzh3eYrtjOGz0upinU3FhcA0zBeOCSIoY/baMPYnmoZ2DZtDwBAHDij3wTVpEcMqTre8SB9RMt39X650ShMwysCHv)
+      username: ENC(r5A15Jti3Re6N0Zl0xtVzQ==)
+      password: ENC(8qqyb8ZlnsJqv82c4f0aUA==)
+      #配置初始化大小、最小、最大线程数
+      initialSize: 5
+      minIdle: 5
+      #CPU核数+1，也可以大些但不要超过20，数据库加锁时连接过多性能下降
+      maxActive: 20
+      #最大等待时间，内网：800，外网：1200（三次握手1s）
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      #配置一个连接在池中最大空间时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      #设置从连接池获取连接时是否检查连接有效性，true检查，false不检查
+      testOnBorrow: true
+      #设置从连接池归还连接时是否检查连接有效性，true检查，false不检查
+      testOnReturn: true
+      #可以支持PSCache（提升写入、查询效率）
+      poolPreparedStatements: true
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙，此处是filter修改的地方
+      filters:
+        commons-log.connection-logger-name: stat,wall,log4j
+      #保持长连接
+      keepAlive: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      useGlobalDataSourceStat: true
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  #配置redis
+  redis:
+    #配置主机号
+    host: 127.0.0.1
+    #配置端口号
+    port: 6379
+    #配置密码 默认不设置密码
+#    password: 123456
+    #配置数据库索引（默认为0）
+    database: 1
+    client-type: jedis
+    jedis:
+      pool:
+        #连接池对打阻塞等待时间（负表示没有限制）
+        max-wait: 10000
+        #连接池最大连接数(负表示没有限制)
+        max-active: 100
+        #连接池中的最大空闲链接
+        max-idle: 20
+        #连接池中的最小空闲链接
+        min-idle: 0
+    #链接超时时间
+    timeout: 3000
+  jackson:
+    #设置时间格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  session:
+    #设置session存储类型
+    store-type: redis
+  kafka:
+    bootstrap-servers: 192.168.153.130:9092
+    producer:
+      #key的序列化
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #value的序列化
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      #key和value的反序列化
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #消费者组id，任意设置
+      group-id: train
+elasticSearch:
+  url: http://120.46.196.67:9200
+
+mybatis:
+  type-aliases-package: com.sicnu.boot.pojo
+  configuration:
+    # 数据库自动驼峰转换 user-name 对应 userName
+    map-underscore-to-camel-case: true
+    # spring boot集成mybatis的方式打印sql
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #mapper文件地址
+  mapper-locations: classpath:mapper/*Mapper.xml
+
+# 配置pagehelper的属性
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+#配置Oss
+oss-config:
+  accessId: ENC(e8xueW/snHDM33OuVqZF/xD5znUZ7FnAksxEgpJa4COVzd1pCVr+KA==)
+  accessKey: ENC(kpzJ+37z3D0mIlYnv8cnxb5VIwBxtxAizzoWZlM8xMqdNHXgF5Z/HA==)
+  endpoint: oss-cn-chengdu.aliyuncs.com
+  bucket: system-1234
+  host: https://${oss-config.bucket}.${oss-config.endpoint}
+
+# 腾讯云短信服务配置
+sms-config:
+  # 腾讯云账户密钥对 secretId 和 secretKey
+  secretId: ENC(R0Yg5kH8GM6VrjMgBrA+maVvdFriQMiMmMA75/6grHVUaO1ZbtaS5v44t7X/ToOG)
+  secretKey: ENC(avsJ1piOO18oSJd230MSQe9mpEJ5oLMDV7NwXMEZI1R8HG1D7KXRxts2LdQtefZy)
+  # 短信应用appId和appKey
+  appId: 1400736359
+  appKey: ed61c0223c636591f657b06cf19cdd5e
+  # 签名
+  smsSign: 仰望星空探索宇宙公众号
+  # 过期时间
+  expireTime: 5  # 5min
+  # redis存储前缀
+  phonePrefix: pinganky_sms
+  # 模板id
+  templateIds:
+    code: 1540491

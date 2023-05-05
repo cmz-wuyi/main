@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sicnu.boot.mapper.UserManageMapper">
+    <insert id="insertUser"  useGeneratedKeys="true" keyProperty="userId"
+            parameterType="com.sicnu.boot.vo.UserDetail">
+        insert into user(user_id, username, password, email, age, sex)
+            values (null,#{username},#{password},#{email},#{age},#{sex})
+    </insert>
+    <insert id="insertUserRole">
+        insert into user_role values(#{userId},#{roleId})
+    </insert>
+    <update id="updateUser" parameterType="com.sicnu.boot.vo.UserDetail">
+        update user set age = #{age}, email = #{email},sex = #{sex} where user_id = #{userId}
+    </update>
+    <select id="getUserList" resultType="com.sicnu.boot.vo.UserDetail">
+        select user_id,username,nickname,email,sex,phone,age,message from user
+        <where>
+            <if test="nickname != null and nickname !=''">
+                nickname like "%" #{nickname} "%"
+            </if>
+            <trim>
+                and user_id > 1
+            </trim>
+        </where>
+        order by user_id
+    </select>
+
+    <select id="getUserByUserId" resultType="com.sicnu.boot.vo.UserDetail">
+        select user_id,username,nickname,email,sex,phone,age,message from user
+            where user_id = #{userId}
+    </select>
+    <select id="checkAdmin" resultType="java.lang.Integer">
+        select count(*)
+        from menu m left join role_menu rm on m.menu_id = rm.menu_id
+                    left join user_role u on rm.role_id = u.role_id
+        where user_id in (select user_id from user where username = #{username}) and m.path = '/admin'
+    </select>
+    <select id="getRoleListByUserId" resultType="com.sicnu.boot.pojo.Role">
+        select * from role where role_id in (select role_id from user_role where user_id = #{userId})
+    </select>
+
+    <delete id="deleteUserByUserId">
+        delete from user where user_id = #{userId}
+    </delete>
+    <delete id="deleteUserRole">
+        delete from user_role where user_id = #{userId}
+    </delete>
+</mapper>
